@@ -4,7 +4,7 @@ source ../setting.conf
 
 # SSH + WSL + borg
 export BORG_RSH="ssh -p $SSH_PORT"
-export BORG_REMOTE_PATH="wsl -d Ubuntu -e borg"
+export BORG_REMOTE_PATH="/mnt/c/Users/lencode/wsl-borg.cmd"
 
 # Источник для бэкапа
 BACKUP_SRC="/home/bitrix/www"
