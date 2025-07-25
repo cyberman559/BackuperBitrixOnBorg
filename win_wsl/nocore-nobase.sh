@@ -42,7 +42,7 @@ function create_backup() {
 }
 
 function prune_archives() {
-    borg prune --prefix "$ARCHIVE_PREFIX" --keep-daily=3 --verbose "$BORG_REPO"
+    borg prune -a "${ARCHIVE_PREFIX}-*" --keep-daily=3 --verbose "$BORG_REPO"
 }
 
 # --- Основная логика ---
