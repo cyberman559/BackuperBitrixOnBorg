@@ -1,29 +1,21 @@
 #!/bin/bash
 
-# --- Настройки ---
-SERVER_IP="31.134.148.163"
-SSH_USER="lencode"
-SSH_PORT=52222
+source ../setting.conf
 
 # SSH + WSL + borg
 export BORG_RSH="ssh -p $SSH_PORT"
 export BORG_REMOTE_PATH="wsl -d Ubuntu -e borg"
-
-# Путь к репозиторию внутри WSL через SSH-протокол
-BORG_REPO="ssh://$SSH_USER@$SERVER_IP:$SSH_PORT/mnt/c/Users/lencode/backups"
 
 # Источник для бэкапа
 BACKUP_SRC="/home/bitrix/www"
 EXCLUDE_PATH="bitrix"
 
 # Контроль интервала между бэкапами
-FLAG_FILE="$HOME/.borg_last_success"
+FLAG_FILE="$HOME/.nocore_nobase_last_success"
 MAX_INTERVAL=$((24*3600))  # 24 часа
 
 # Название архивов
-ARCHIVE_PREFIX="backup-no-core-no-base"
-
-# --- Функции ---
+ARCHIVE_PREFIX="backup-nocore-nobase"
 
 function server_is_up() {
     ssh -o ConnectTimeout=5 -p "$SSH_PORT" "$SSH_USER@$SERVER_IP" "exit" &>/dev/null
