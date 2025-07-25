@@ -4,7 +4,7 @@ source ../setting.conf
 
 # SSH + WSL + borg
 export BORG_RSH="ssh -i ~/.ssh/id_ed25519_borg -p $SSH_PORT"
-export BORG_REMOTE_PATH="wsl -d Ubuntu -e borg"
+export BORG_REMOTE_PATH="borg"
 
 # Источник для бэкапа
 BACKUP_SRC="/home/bitrix/www"
@@ -18,7 +18,7 @@ MAX_INTERVAL=$((24*3600))  # 24 часа
 ARCHIVE_PREFIX="backup-nocore-nobase"
 
 function server_is_up() {
-    ssh -o ConnectTimeout=5 -p "$SSH_PORT" "$SSH_USER@$SERVER_IP" "exit" &>/dev/null
+    ssh -i ~/.ssh/id_ed25519_borg -o ConnectTimeout=5 -p "$SSH_PORT" "$SSH_USER@$SERVER_IP" "exit" &>/dev/null
 }
 
 function time_to_backup() {
@@ -35,7 +35,7 @@ function record_success() {
 }
 
 function create_backup() {
-    ARCHIVE_NAME="${ARCHIVE_PREFIX}$(date +%Y-%m-%d_%H-%M-%S)"
+    ARCHIVE_NAME="${ARCHIVE_PREFIX}-$(date +%Y-%m-%d_%H-%M-%S)"
     borg create --verbose --stats --compression=lz4 \
         --exclude "$BACKUP_SRC/$EXCLUDE_PATH" \
         "$BORG_REPO"::"$ARCHIVE_NAME" "$BACKUP_SRC"
