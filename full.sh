@@ -46,8 +46,8 @@ function create_backup() {
 
 function prune_archives() {
     borg prune -a "${ARCHIVE_PREFIX}-*" \
-        --keep-monthly=1 \
-        --keep-within=1d \
+        --keep-last=1 \
+        --keep-monthly=3 \
         --verbose "$BORG_REPO"
 }
 
