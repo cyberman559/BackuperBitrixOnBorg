@@ -52,7 +52,6 @@ function prune_archives() {
 }
 
 function create_db_dump() {
-    mkdir -p "$DUMP_DIR"
     mysqldump "$DB_NAME" > "$DUMP_FILE"
     if [[ $? -ne 0 ]]; then
         echo "Ошибка создания дампа базы данных."
