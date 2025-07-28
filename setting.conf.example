@@ -12,6 +12,6 @@ BACKUP_SRC=(
     "/home/bitrix/www"
     "/home/bitrix/ext_www"
 )
-DUMP_FILE="$BACKUP_SRC/mysql_dump.sql"
+DUMP_FILE="${BACKUP_SRC[0]}/mysql_dump.sql"
 
 PROJECT="your_project"
