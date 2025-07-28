@@ -9,10 +9,6 @@ export BORG_REMOTE_PATH="borg"
 FLAG_FILE="$HOME/.full_last_success"
 ARCHIVE_PREFIX="backup-nocore"
 
-function server_is_up() {
-    ssh -i ~/.ssh/id_ed25519_borg -o ConnectTimeout=5 -p "$SSH_PORT" "$SSH_USER@$SERVER_IP" "exit" &>/dev/null
-}
-
 function time_to_backup() {
     if [[ ! -f "$FLAG_FILE" ]]; then
         return 0
@@ -28,10 +24,6 @@ function time_to_backup() {
     else
         return 1
     fi
-}
-
-function record_success() {
-    date +%F > "$FLAG_FILE"
 }
 
 function create_backup() {

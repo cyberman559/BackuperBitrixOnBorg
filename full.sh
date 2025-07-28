@@ -2,6 +2,7 @@
 
 source ./setting.conf
 source ./functions/db_dump;
+source ./functions/main;
 
 export BORG_RSH="ssh -i ~/.ssh/id_ed25519_borg -p $SSH_PORT"
 export BORG_REMOTE_PATH="borg"
@@ -9,8 +10,18 @@ export BORG_REMOTE_PATH="borg"
 FLAG_FILE="$HOME/.full_last_success"
 ARCHIVE_PREFIX="backup-full"
 
-function server_is_up() {
-    ssh -i ~/.ssh/id_ed25519_borg -o ConnectTimeout=5 -p "$SSH_PORT" "$SSH_USER@$SERVER_IP" "exit" &>/dev/null
+function prune_archives() {
+    borg prune -a "${ARCHIVE_PREFIX}-*" \
+        --keep-last=1 \
+        --keep-monthly=3 \
+        --verbose "$BORG_REPO"
+}
+
+function create_backup() {
+    ARCHIVE_NAME="${ARCHIVE_PREFIX}-$(date +%Y-%m-%d_%H-%M-%S)"
+    borg create --verbose --stats --compression=lz4 \
+        --exclude-from full_excludes \
+        "$BORG_REPO"::"$ARCHIVE_NAME" "$BACKUP_SRC"
 }
 
 function time_to_backup() {
@@ -28,28 +39,6 @@ function time_to_backup() {
     else
         return 1
     fi
-}
-
-function record_success() {
-    date +%F > "$FLAG_FILE"
-}
-
-function is_first_day_of_month() {
-    [ "$(date +%d)" = "01" ]
-}
-
-function create_backup() {
-    ARCHIVE_NAME="${ARCHIVE_PREFIX}-$(date +%Y-%m-%d_%H-%M-%S)"
-    borg create --verbose --stats --compression=lz4 \
-        --exclude-from full_excludes \
-        "$BORG_REPO"::"$ARCHIVE_NAME" "$BACKUP_SRC"
-}
-
-function prune_archives() {
-    borg prune -a "${ARCHIVE_PREFIX}-*" \
-        --keep-last=1 \
-        --keep-monthly=3 \
-        --verbose "$BORG_REPO"
 }
 
 # --- Основная логика ---
