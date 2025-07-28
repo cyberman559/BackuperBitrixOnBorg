@@ -8,7 +8,10 @@ DB_NAME="sitemanager"
 # Путь к репозиторию внутри WSL через SSH-протокол
 BORG_REPO="ssh://$SSH_USER@$SERVER_IP:$SSH_PORT/mnt/backups/$SSH_USER"
 
-BACKUP_SRC="/home/bitrix/www"
+BACKUP_SRC=(
+    "/home/bitrix/www"
+    "/home/bitrix/ext_www"
+)
 DUMP_FILE="$BACKUP_SRC/mysql_dump.sql"
 
 PROJECT="your_project"

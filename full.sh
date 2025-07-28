@@ -21,7 +21,7 @@ function create_backup() {
     ARCHIVE_NAME="${ARCHIVE_PREFIX}-$(date +%Y-%m-%d_%H-%M-%S)"
     borg create --verbose --stats --compression=lz4 \
         --exclude-from full_excludes \
-        "$BORG_REPO"::"$ARCHIVE_NAME" "$BACKUP_SRC"
+        "$BORG_REPO"::"$ARCHIVE_NAME" "${BACKUP_SRC[@]}"
 }
 
 function time_to_backup() {
