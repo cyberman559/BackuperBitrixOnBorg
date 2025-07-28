@@ -36,17 +36,18 @@ mkdir -p "$backup_dir"
 chown "$username":"$username" "$backup_dir"
 
 read -p "Введите имя пользователя Samba: " username_samba
-cred_file="/etc/samba/users/.cifs_${username_samba}_cred"
+mkdir ./users
+cred_file="./users/.cifs_${username_samba}_cred"
 echo "username=$username_samba" > "$cred_file"
 
-read -p "Введите пароль пользователя Samba: " password_samba
+read -s -p "Введите пароль пользователя Samba: " password_samba
 echo "password=$password_samba" >> "$cred_file"
 chmod 600 "$cred_file"
 
 mount_point="$backup_dir"
 share="//192.168.6.3/$username"
 
-mount -t cifs "$share" "$mount_point" -o username=$cifs_user,password=$cifs_pass,uid=$username,gid=$username,vers=1.0
+mount -t cifs "$share" "$mount_point" -o username=$username_samba,password=$password_samba,uid=$username,gid=$username,vers=1.0
 
 if [[ $? -ne 0 ]]; then
   echo "Ошибка при монтировании CIFS."
