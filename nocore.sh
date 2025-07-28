@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source ./setting.conf
+source ./functions/db_dump;
 
 export BORG_RSH="ssh -i ~/.ssh/id_ed25519_borg -p $SSH_PORT"
 export BORG_REMOTE_PATH="borg"
@@ -44,46 +45,6 @@ function prune_archives() {
     borg prune -a "${ARCHIVE_PREFIX}-*" \
         --keep-within=3d \
         --verbose "$BORG_REPO"
-}
-
-function create_db_dump() {
-    all_tables=($(mysql -N -e "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA='$DB_NAME';"))
-
-    IGNORE_ARGS=()
-
-    for table in "${all_tables[@]}"; do
-        table_lower=$(echo "$table" | tr '[:upper:]' '[:lower:]')
-
-        # Проверка условий исключения
-        if [[ $dump_base_skip_stat -eq 1 && "$table_lower" =~ ^b_stat ]]; then
-            IGNORE_ARGS+=(--ignore-table="$DB_NAME.$table")
-            continue
-        fi
-
-        if [[ $dump_base_skip_search -eq 1 && "$table_lower" =~ ^b_search_ ]]; then
-            if [[ ! "$table_lower" =~ ^b_search_custom_rank$ && ! "$table_lower" =~ ^b_search_phrase$ ]]; then
-                IGNORE_ARGS+=(--ignore-table="$DB_NAME.$table")
-                continue
-            fi
-        fi
-
-        if [[ $dump_base_skip_log -eq 1 && "$table_lower" == "b_event_log" ]]; then
-            IGNORE_ARGS+=(--ignore-table="$DB_NAME.$table")
-            continue
-        fi
-    done
-
-    mysqldump "${IGNORE_ARGS[@]}" "$DB_NAME" > "$DUMP_FILE"
-    if [[ $? -ne 0 ]]; then
-        echo "Ошибка создания дампа базы данных."
-        return 1
-    fi
-    echo "Дамп базы данных сохранён в $DUMP_FILE"
-    return 0
-}
-
-function cleanup_db_dump() {
-    rm -f "$DUMP_FILE"
 }
 
 # --- Основная логика ---
