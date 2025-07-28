@@ -2,6 +2,7 @@
 
 source ./setting.conf
 source ./functions/db_dump;
+source ./functions/main;
 
 export BORG_RSH="ssh -i ~/.ssh/id_ed25519_borg -p $SSH_PORT"
 export BORG_REMOTE_PATH="borg"
