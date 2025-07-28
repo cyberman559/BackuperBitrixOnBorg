@@ -10,3 +10,5 @@ BORG_REPO="ssh://$SSH_USER@$SERVER_IP:$SSH_PORT/mnt/backups/"
 
 BACKUP_SRC="/home/bitrix/www"
 DUMP_FILE="$BACKUP_SRC/mysql_dump.sql"
+
+PROJECT="your_project"

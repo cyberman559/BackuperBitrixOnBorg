@@ -8,7 +8,7 @@ export BORG_RSH="ssh -i ~/.ssh/id_ed25519_borg -p $SSH_PORT"
 export BORG_REMOTE_PATH="borg"
 
 FLAG_FILE="$HOME/.full_last_success"
-ARCHIVE_PREFIX="backup-full"
+ARCHIVE_PREFIX="$PROJECT-backup-full"
 
 function prune_archives() {
     borg prune -a "${ARCHIVE_PREFIX}-*" \
