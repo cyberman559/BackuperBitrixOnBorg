@@ -11,3 +11,6 @@ read -p "Нажмите Enter, чтобы продолжить..."
 
 export BORG_RSH="ssh -i ~/.ssh/id_ed25519_borg -p $SSH_PORT"
 borg init --encryption=none $BORG_REPO
+
+chmod +x ./cron.sh
+(crontab -l ; echo "0 * * * * /root/sbp/cron.sh >> /var/log/backup.log 2>&1") | crontab -

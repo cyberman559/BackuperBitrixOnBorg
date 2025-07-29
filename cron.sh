@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./full.sh
-./nocore.sh
+/root/sbp/full.sh
+/root/sbp/nocore.sh
