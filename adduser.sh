@@ -24,11 +24,11 @@ chown "$username":"$username" "$backup_dir"
 
 read -p "Введите имя пользователя Samba: " username_samba
 cred_file="/root/sbp/.cifs_${username_samba}_cred"
-echo "username=$username_samba" >> "$cred_file"
+#echo "username=$username_samba" >> "$cred_file"
 
 read -s -p "Введите пароль пользователя Samba: " password_samba
-echo "password=$password_samba" >> "$cred_file"
-chmod 600 "$cred_file"
+#echo "password=$password_samba" >> "$cred_file"
+#chmod 600 "$cred_file"
 
 mount_point="$backup_dir"
 share="//192.168.6.3/$username"
@@ -53,13 +53,13 @@ echo "Публичный ключ:"
 cat /root/.ssh/id_ed25519_borg.pub
 read -p "Нажмите Enter, чтобы продолжить..."
 
-borg init --encryption=repokey-blake2 $BORG_REPO
+borg init --encryption=repokey-blake2 /mnt/backups/$username
 
 mkdir /root/sbp/projects
 mkdir /root/sbp/projects/$username
 
 cp /root/sbp/borgmatic/full.yaml /root/sbp/projects/$username/full.yaml
-cp /root/sbp/conf/setting.conf /root/sbp/conf/$username.conf
+cp /root/sbp/conf/setting.conf /root/sbp/projects/$username/$username.conf
 
 echo "Не забудь исправить /root/sbp/projects/$username/full.yaml и /root/sbp/conf/$username.conf"
 
