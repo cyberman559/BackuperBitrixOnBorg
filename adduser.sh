@@ -59,7 +59,7 @@ mkdir /root/sbp/projects
 mkdir /root/sbp/projects/$username
 
 cp /root/sbp/borgmatic/full.yaml /root/sbp/projects/$username/full.yaml
-cp /root/sbp/conf/setting.conf /root/sbp/projects/$username/$username.conf
+cp /root/sbp/conf/setting.conf //mnt/backups/$username/$username.conf
 
 echo "Не забудь исправить /root/sbp/projects/$username/full.yaml и /root/sbp/conf/$username.conf"
 
