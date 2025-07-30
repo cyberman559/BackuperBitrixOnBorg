@@ -5,27 +5,14 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-read -p "Введите имя пользователя: " username
+read -p "Введите название проекта: " username
 
 if id "$username" &>/dev/null; then
-  echo "Пользователь $username уже существует."
+  echo "Пользователь проекта $username уже существует."
 else
-  useradd -m "$username"
-  echo "Пользователь $username создан."
+  useradd -M -s /usr/sbin/nologin "$username"
+  echo "Пользователь проекта $username создан."
 fi
-
-read -s -p "Введите пароль для пользователя $username: " password
-echo
-read -s -p "Подтвердите пароль: " password_confirm
-echo
-
-if [[ "$password" != "$password_confirm" ]]; then
-  echo "Пароли не совпадают. Выход."
-  exit 1
-fi
-
-echo "$username:$password" | chpasswd
-echo "Пароль установлен."
 
 # Добавляем пользователя в группу borg, удаляем из группы users
 usermod -aG borg "$username"
@@ -36,8 +23,7 @@ mkdir -p "$backup_dir"
 chown "$username":"$username" "$backup_dir"
 
 read -p "Введите имя пользователя Samba: " username_samba
-mkdir ./users
-cred_file="./users/.cifs_${username_samba}_cred"
+cred_file="/root/sbp/.cifs_${username_samba}_cred"
 echo "username=$username_samba" >> "$cred_file"
 
 read -s -p "Введите пароль пользователя Samba: " password_samba
@@ -50,7 +36,7 @@ share="//192.168.6.3/$username"
 uid=$(id -u $username)
 gid=$(id -g $username)
 
-mount -t cifs "$share" "$mount_point" -o username=$username_samba,password=$password_samba,uid=$uid,gid=$gid,vers=1.0
+mount -t cifs "$share" "$mount_point" -o username="$username_samba",password="$password_samba",uid="$uid",gid="$gid",vers=1.0
 
 if [[ $? -ne 0 ]]; then
   echo "Ошибка при монтировании CIFS."
@@ -61,5 +47,20 @@ echo "Папка примонтирована."
 fstab_entry="$share $mount_point cifs credentials=$cred_file,uid=$uid,gid=$gid,vers=1.0 0 0"
 
 grep -qF "$share" /etc/fstab || echo "$fstab_entry" >> /etc/fstab
+
+ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519_borg -C "borg"
+echo "Публичный ключ:"
+cat /root/.ssh/id_ed25519_borg.pub
+read -p "Нажмите Enter, чтобы продолжить..."
+
+borg init --encryption=repokey-blake2 $BORG_REPO
+
+mkdir /root/sbp/projects
+mkdir /root/sbp/projects/$username
+
+cp /root/sbp/borgmatic/full.yaml /root/sbp/projects/$username/full.yaml
+cp /root/sbp/conf/setting.conf /root/sbp/conf/$username.conf
+
+echo "Не забудь исправить /root/sbp/projects/$username/full.yaml и /root/sbp/conf/$username.conf"
 
 echo "Завершено!"
