@@ -2,6 +2,7 @@ location:
   source_directories:
     - /home/bitrix/www
     - /home/bitrix/ext_www
+    - /home/bitrix/mysql_dump.sql
   exclude_patterns:
       - /home/bitrix/www/bitrix/backup
       - /home/bitrix/www/bitrix/cache
@@ -32,7 +33,7 @@ umask: 077
 
 storage:
   compression: lz4
-  archive_name_format: "${borgrepo}-full-{now:%Y-%m-%d}"
+  archive_name_format: "${borgrepo}-full-{now:%Y-%m-%d_%H-%M-%S}"
 
 retention:
   keep_last: 2
@@ -46,7 +47,9 @@ consistency:
 
 hooks:
   before_backup:
-    - /usr/local/bin/dump_bitrix_db.sh
+    - /root/sbp/dump_bitrix_db.sh -project=${borgrepo}
+  after_backup:
+    - /root/sbp/delete_dump_bitrix_db.sh -project=${borgrepo}
   after_prune:
     - borg compact {repository}
   on_error:
