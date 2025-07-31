@@ -1,5 +1,11 @@
 #!/bin/bash
 
+project="${1:-}"
+if [[ -z "$project" ]]; then
+    echo "Не передан параметр project"
+    exit 1
+fi
+
 source /root/sbp/projects/${project}/setting.conf
 
 FLAG_FILE="/mnt/backups/${project}/.full_last_success"
