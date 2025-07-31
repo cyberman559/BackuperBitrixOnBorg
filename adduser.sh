@@ -66,8 +66,9 @@ echo "Публичный ключ:"
 cat /root/.ssh/id_ed25519_borg.pub
 read -p "Нажмите Enter, чтобы продолжить..."
 
-ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519_borg -C "borg_client"
 mkdir -p /home/$username/.ssh
+ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519_borg -C "borg_client"
+
 #chown "$username":"$username" /home/$username/.ssh
 #chmod 700 /home/$username/.ssh
 cat /home/$username/.ssh/id_ed25519_borg.pub | sudo tee -a /home/$username/.ssh/authorized_keys > /dev/null
