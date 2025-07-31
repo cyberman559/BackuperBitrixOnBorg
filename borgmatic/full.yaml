@@ -34,11 +34,12 @@ umask: 077
 compression: lz4
 archive_name_format: "${borgrepo}-full-{now:%Y-%m-%d_%H-%M-%S}"
 
-keep_daily: 3
+keep_daily: 7
+keep_weekly: 4
 keep_monthly: 6
 
 after_backup:
-  - rm -f "/home/bitrix/*.sql"
+  - rm -f "/home/bitrix/*.sql" && date +%F > /mnt/backups/${borgrepo}/.full_last_success
 after_prune:
   - borg compact {repository}
 on_error:
