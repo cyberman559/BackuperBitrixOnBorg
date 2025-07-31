@@ -73,13 +73,15 @@ ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519_borg -C "borg_client"
 #chmod 700 /home/$username/.ssh
 cat /home/$username/.ssh/id_ed25519_borg.pub | sudo tee -a /home/$username/.ssh/authorized_keys > /dev/null
 
+systemctl restart sshd
+
 borg init --encryption=repokey-blake2 /mnt/backups/$username
 
 mkdir /root/sbp/projects
 mkdir /root/sbp/projects/$username
 
 cp /root/sbp/borgmatic/full.yaml /mnt/backups/$username/full.yaml
-cp /root/sbp/conf/setting.conf /mnt/backups/$username/setting.conf
+cp /root/sbp/conf/setting.conf /root/sbp/projects/$username/setting.conf
 
 echo "Не забудь исправить /root/sbp/projects/$username/full.yaml и /root/sbp/conf/$username.conf"
 
