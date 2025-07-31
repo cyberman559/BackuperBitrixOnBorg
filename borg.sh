@@ -1,5 +1,12 @@
 #!/bin/bash
 
+function close() {
+    fusermount -u "$local_mount"
+    rm -f "$identity_file"
+    rm -f "/home/bitrix/*.sql"
+    rm -f "$local_mount"
+}
+
 project="$1"
 SERVER_IP="$2"
 SERVER_USER="$3"
@@ -78,12 +85,5 @@ if ! borgmatic --config "$config_path"; then
     close;
     exit 1
 fi
-
-function close() {
-    fusermount -u "$local_mount"
-    rm -f "$identity_file"
-    rm -f "/home/bitrix/*.sql"
-    rm -f "$local_mount"
-}
 
 close;
