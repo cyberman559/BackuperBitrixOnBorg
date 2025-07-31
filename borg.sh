@@ -1,9 +1,9 @@
 #!/bin/bash
 
 function close() {
-    fusermount -u "$local_mount"
     rm -f "$identity_file"
     rm -f "/home/bitrix/*.sql"
+    fusermount -u "$local_mount"
     #rm -rf "$local_mount"
 }
 
