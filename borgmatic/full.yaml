@@ -24,7 +24,7 @@ atime: false
 ctime: true
 birthtime: true
 
-checkpoint_interval: 30
+checkpoint_interval: 1800
 chunker_params: 19,23,21,4095
 retries: 0
 retry_wait: 0
