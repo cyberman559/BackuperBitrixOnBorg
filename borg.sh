@@ -1,9 +1,5 @@
 #!/bin/bash
 
-set -euo pipefail
-
-dnf install borgbackup borgmatic sshfs -y
-
 project="$1"
 SERVER_IP="$2"
 SERVER_USER="$3"
@@ -27,15 +23,14 @@ mkdir -p "$local_mount"
 # Монтируем SSHFS
 if ! sshfs -o IdentityFile="$identity_file",port="$SERVER_PORT",StrictHostKeyChecking=no "$SERVER_USER@$remote_server:$remote_share" "$local_mount"; then
     echo "Ошибка при монтировании SSHFS"
-    rm -f "$identity_file"
+    close;
     exit 1
 fi
 
 # Проверка существования конфигурации
 if [[ ! -f "$config_path" ]]; then
     echo "Конфигурация $config_path не найдена."
-    fusermount -u "$local_mount"
-    rm -f "$identity_file"
+    close;
     exit 1
 fi
 
@@ -80,13 +75,15 @@ done
 # Запуск borgmatic
 if ! borgmatic --config "$config_path"; then
     echo "Ошибка при выполнении borgmatic"
-    fusermount -u "$local_mount"
-    rm -f "$identity_file"
-    rm -f "/home/bitrix/*.sql"
+    close;
     exit 1
 fi
 
-# Отмонтировать папку
-fusermount -u "$local_mount"
-rm -f "$identity_file"
-rm -f "/home/bitrix/*.sql"
+function close() {
+    fusermount -u "$local_mount"
+    rm -f "$identity_file"
+    rm -f "/home/bitrix/*.sql"
+    rm -f "$local_mount"
+}
+
+close;
