@@ -22,6 +22,8 @@ function close() {
     #rm -rf "$local_mount"
 }
 
+trap close EXIT
+
 echo "$PRIVATE_KEY_CONTENT" | base64 -d > "$identity_file"
 chmod 600 "$identity_file"
 
@@ -30,14 +32,12 @@ mkdir -p "$local_mount"
 # Монтируем SSHFS
 if ! sshfs -o IdentityFile="$identity_file",port="$SERVER_PORT",StrictHostKeyChecking=no "$SERVER_USER@$remote_server:$remote_share" "$local_mount"; then
     echo "Ошибка при монтировании SSHFS"
-    close;
     exit 1
 fi
 
 # Проверка существования конфигурации
 if [[ ! -f "$config_path" ]]; then
     echo "Конфигурация $config_path не найдена."
-    close;
     exit 1
 fi
 
@@ -82,8 +82,5 @@ done
 # Запуск borgmatic
 if ! borgmatic --config "$config_path"; then
     echo "Ошибка при выполнении borgmatic"
-    close;
     exit 1
 fi
-
-close;
