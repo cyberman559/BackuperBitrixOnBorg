@@ -22,7 +22,7 @@ function time_to_backup() {
 }
 
 if time_to_backup; then
-    ssh $SSH_USER@$SERVER_IP -p $SSH_PORT -i /root/.ssh/id_ed25519_borg 'bash -s -- project ${project}' < /root/sbp/borg.sh
+    ssh $CLIENT_USER@$CLIENT_IP -p $CLIENT_PORT -i /root/.ssh/id_ed25519_borg 'bash -s -- project ${project}' < /root/sbp/borg.sh
 else
     echo "Резервная копия была менее 1 дня назад. Пропускаем."
 fi
