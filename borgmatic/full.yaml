@@ -1,22 +1,21 @@
-location:
-  source_directories:
-    - /home/bitrix/www
-    - /home/bitrix/ext_www
-    - /home/bitrix/mysql_dump.sql
-  exclude_patterns:
-      - /home/bitrix/www/bitrix/backup
-      - /home/bitrix/www/bitrix/cache
-      - /home/bitrix/www/bitrix/managed_cache
-      - /home/bitrix/www/bitrix/stack_cache
-      - /home/bitrix/www/bitrix/tmp
-      - /home/bitrix/www/bitrix/html_pages
-      - /home/bitrix/www/upload/resize_cache
-      - /home/bitrix/ext_www/*/bitrix
-      - /home/bitrix/ext_www/*/upload/
-      - /home/bitrix/ext_www/*/images/
-  repositories:
-    - /mnt/backup/${borgrepo}
-  one_file_system: false
+source_directories:
+  - /home/bitrix/www
+  - /home/bitrix/ext_www
+  - /home/bitrix/mysql_dump.sql
+exclude_patterns:
+  - /home/bitrix/www/bitrix/backup
+  - /home/bitrix/www/bitrix/cache
+  - /home/bitrix/www/bitrix/managed_cache
+  - /home/bitrix/www/bitrix/stack_cache
+  - /home/bitrix/www/bitrix/tmp
+  - /home/bitrix/www/bitrix/html_pages
+  - /home/bitrix/www/upload/resize_cache
+  - /home/bitrix/ext_www/*/bitrix
+  - /home/bitrix/ext_www/*/upload/
+  - /home/bitrix/ext_www/*/images/
+repositories:
+  - /mnt/backup/${borgrepo}
+one_file_system: false
 
 encryption_passcommand: "echo ${BORG_PASSPHRASE}"
 
@@ -35,24 +34,21 @@ storage:
   compression: lz4
   archive_name_format: "${borgrepo}-full-{now:%Y-%m-%d_%H-%M-%S}"
 
-retention:
-  keep_last: 2
-  keep_monthly: 3
+keep_last: 3
+keep_monthly: 6
 
-consistency:
-  checks:
-    - repository
-    - archives
-  check_last: 5
+checks:
+  - repository
+  - archives
+check_last: 5
 
-hooks:
-  before_backup:
-    - /root/sbp/dump_bitrix_db.sh -project=${borgrepo}
-  after_backup:
-    - /root/sbp/delete_dump_bitrix_db.sh -project=${borgrepo}
-  after_prune:
-    - borg compact {repository}
-  on_error:
-    - echo "Ошибка во время резервного копирования" >&2
+before_backup:
+  - /mnt/backups/${borgrepo}/dump_bitrix_db.sh ${borgrepo}
+after_backup:
+  - rm -f "/home/bitrix/*.sql"
+after_prune:
+  - borg compact {repository}
+on_error:
+  - echo "Ошибка во время резервного копирования" >&2
 
 files_cache: ctime,size
