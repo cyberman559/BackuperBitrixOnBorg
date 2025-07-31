@@ -1,7 +1,8 @@
+
 source_directories:
   - /home/bitrix/www
   - /home/bitrix/ext_www
-  - /home/bitrix/mysql_dump.sql
+  - /home/bitrix/*.sql
 exclude_patterns:
   - /home/bitrix/www/bitrix/backup
   - /home/bitrix/www/bitrix/cache
@@ -25,25 +26,17 @@ birthtime: true
 
 checkpoint_interval: 30
 chunker_params: 19,23,21,4095
-retries: 3
-retry_wait: 30
+retries: 0
+retry_wait: 0
 lock_wait: 3600
 umask: 077
 
-storage:
-  compression: lz4
-  archive_name_format: "${borgrepo}-full-{now:%Y-%m-%d_%H-%M-%S}"
+compression: lz4
+archive_name_format: "${borgrepo}-full-{now:%Y-%m-%d_%H-%M-%S}"
 
-keep_last: 3
+keep_daily: 3
 keep_monthly: 6
 
-checks:
-  - repository
-  - archives
-check_last: 5
-
-before_backup:
-  - /mnt/backups/${borgrepo}/dump_bitrix_db.sh ${borgrepo}
 after_backup:
   - rm -f "/home/bitrix/*.sql"
 after_prune:

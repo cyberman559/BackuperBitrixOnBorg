@@ -6,8 +6,6 @@ if [[ -z "$project" ]]; then
     exit 1
 fi
 
-source /root/sbp/projects/${project}/setting.conf
-
 FLAG_FILE="/mnt/backups/${project}/.full_last_success"
 
 function time_to_backup() {
@@ -26,6 +24,8 @@ function time_to_backup() {
         return 1
     fi
 }
+
+source /root/sbp/projects/${project}/setting.conf
 
 if time_to_backup; then
     PRIVATE_KEY_PATH="/home/$project/.ssh/id_ed25519_borg"

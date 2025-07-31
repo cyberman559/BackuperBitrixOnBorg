@@ -1,12 +1,5 @@
 #!/bin/bash
 
-function close() {
-    rm -f "$identity_file"
-    rm -f /home/bitrix/*.sql
-    fusermount -u "$local_mount"
-    #rm -rf "$local_mount"
-}
-
 project="$1"
 SERVER_IP="$2"
 SERVER_USER="$3"
@@ -21,6 +14,13 @@ remote_share="/mnt/backups/$project"
 local_mount="/mnt/backups/$project"
 config_path="${local_mount}/full.yaml"
 identity_file="/tmp/borg_key_$project"
+
+function close() {
+    rm -f "$identity_file"
+    rm -f /home/bitrix/*.sql
+    fusermount -u "$local_mount"
+    #rm -rf "$local_mount"
+}
 
 echo "$PRIVATE_KEY_CONTENT" | base64 -d > "$identity_file"
 chmod 600 "$identity_file"
