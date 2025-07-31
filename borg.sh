@@ -8,25 +8,15 @@ project="$1"
 SERVER_IP="$2"
 SERVER_USER="$3"
 SERVER_PORT="$4"
+PRIVATE_KEY_CONTENT="$5"
 
 remote_server="$SERVER_IP"
 remote_share="/mnt/backups/$project"
 local_mount="/mnt/backups/$project"
 config_path="${local_mount}/full.yaml"
 identity_file="/tmp/borg_key_$project"
-read_private_key() {
-  local line
-  while IFS= read -r line; do
-    [[ "$line" == "-----BEGIN OPENSSH PRIVATE KEY-----" ]] && break
-  done
-  echo "$line"
-  while IFS= read -r line; do
-    echo "$line"
-    [[ "$line" == "-----END OPENSSH PRIVATE KEY-----" ]] && break
-  done
-}
 
-read_private_key > "$identity_file"
+echo "$PRIVATE_KEY_CONTENT" | base64 -d > "$identity_file"
 chmod 600 "$identity_file"
 
 mkdir -p "$local_mount"

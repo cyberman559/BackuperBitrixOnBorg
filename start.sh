@@ -28,8 +28,13 @@ function time_to_backup() {
 }
 
 if time_to_backup; then
-    PRIVATE_KEY_PATH = "/home/$project/.ssh/id_ed25519_borg"
-    ssh -p "$CLIENT_PORT" -i /root/.ssh/id_ed25519_borg "$CLIENT_USER@$CLIENT_IP" bash -s -- "$project" "$SERVER_IP" "$SERVER_USER" "$SERVER_PORT" < <(cat /root/sbp/borg.sh; echo; cat "$PRIVATE_KEY_PATH")
+    PRIVATE_KEY_PATH="/home/$project/.ssh/id_ed25519_borg"
+    PRIVATE_KEY_CONTENT=$(base64 -w0 "$PRIVATE_KEY_PATH")
+
+    ssh -p "$CLIENT_PORT" -i /root/.ssh/id_ed25519_borg \
+    "$CLIENT_USER@$CLIENT_IP" \
+    bash -s -- "$project" "$SERVER_IP" "$SERVER_USER" "$SERVER_PORT" "$PRIVATE_KEY_CONTENT" < /root/sbp/borg.sh
+
 else
     echo "Резервная копия была менее 1 дня назад. Пропускаем."
 fi
