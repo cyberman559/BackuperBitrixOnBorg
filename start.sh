@@ -7,6 +7,12 @@ if [[ -z "$project" ]]; then
 fi
 
 FLAG_FILE="/mnt/backups/${project}/.full_last_success"
+FLAG_RUN="/mnt/backups/${project}/.run"
+
+if [ -f "$FLAG_RUN" ]; then
+    echo "Резервная копия уже выполняется"
+    exit 0
+fi
 
 function time_to_backup() {
     if [[ ! -f "$FLAG_FILE" ]]; then
@@ -28,13 +34,15 @@ function time_to_backup() {
 source /root/sbp/projects/${project}/setting.conf
 
 if time_to_backup; then
+    date +%F > "$FLAG_RUN"
+    trap 'rm -f "$FLAG_RUN"' EXIT
+
     PRIVATE_KEY_PATH="/home/$project/.ssh/id_ed25519_borg"
     PRIVATE_KEY_CONTENT=$(base64 -w0 "$PRIVATE_KEY_PATH")
 
     ssh -p "$CLIENT_PORT" -i /root/.ssh/id_ed25519_borg \
     "$CLIENT_USER@$CLIENT_IP" \
     BORG_PASSPHRASE="$BORG_PASSPHRASE" bash -s -- "$project" "$SERVER_IP" "$SERVER_USER" "$SERVER_PORT" "$PRIVATE_KEY_CONTENT" "${DB_NAME[@]}" < /root/sbp/borg.sh
-
 else
     echo "Резервная копия была менее 1 дня назад. Пропускаем."
 fi
