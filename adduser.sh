@@ -78,7 +78,8 @@ mkdir /root/sbp/projects
 mkdir /root/sbp/projects/$username
 
 cp /root/sbp/borgmatic/full.yaml /mnt/backups/$username/full.yaml
-cp /root/sbp/conf/setting.conf /root/sbp/projects/$username/setting.conf
+cp /root/sbp/conf/setting.conf /mnt/backups/$username/setting.conf
+cp /home/$username/.ssh/id_ed25519_borg /mnt/backups/$username/id_ed25519_borg
 
 echo "Не забудь исправить /root/sbp/projects/$username/full.yaml и /root/sbp/conf/$username.conf"
 

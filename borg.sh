@@ -8,13 +8,13 @@ if [[ -z "$project" ]]; then
     exit 1
 fi
 
-source "/root/sbp/projects/${project}/setting.conf"
+source "/mnt/backups/${project}/setting.conf"
 
 remote_server="$SERVER_IP"
 remote_share="/mnt/backups/${project}"
-local_mount="/mnt/server_backup/${project}"
+local_mount="/mnt/backups/${project}"
 config_path="${local_mount}/full.yaml"
-identity_file="/home/${project}/.ssh/id_ed25519_borg"
+identity_file="/mnt/backups/id_ed25519_borg"
 
 mkdir -p "$local_mount"
 
