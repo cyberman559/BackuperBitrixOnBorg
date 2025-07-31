@@ -5,14 +5,27 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-read -p "Введите название проекта: " username
+read -p "Введите имя пользователя: " username
 
 if id "$username" &>/dev/null; then
-  echo "Пользователь проекта $username уже существует."
+  echo "Пользователь $username уже существует."
 else
-  useradd -M -s /usr/sbin/nologin "$username"
-  echo "Пользователь проекта $username создан."
+  useradd -m "$username"
+  echo "Пользователь $username создан."
 fi
+
+read -s -p "Введите пароль для пользователя $username: " password
+echo
+read -s -p "Подтвердите пароль: " password_confirm
+echo
+
+if [[ "$password" != "$password_confirm" ]]; then
+  echo "Пароли не совпадают. Выход."
+  exit 1
+fi
+
+echo "$username:$password" | chpasswd
+echo "Пароль установлен."
 
 # Добавляем пользователя в группу borg, удаляем из группы users
 usermod -aG borg "$username"
@@ -53,13 +66,19 @@ echo "Публичный ключ:"
 cat /root/.ssh/id_ed25519_borg.pub
 read -p "Нажмите Enter, чтобы продолжить..."
 
+ssh-keygen -t ed25519 -f /home/$username/.ssh/id_ed25519_borg -C "borg_client"
+mkdir -p /home/$username/.ssh
+#chown "$username":"$username" /home/$username/.ssh
+#chmod 700 /home/$username/.ssh
+cat /home/$username/.ssh/id_ed25519_borg.pub | sudo tee -a /home/$username/.ssh/authorized_keys > /dev/null
+
 borg init --encryption=repokey-blake2 /mnt/backups/$username
 
 mkdir /root/sbp/projects
 mkdir /root/sbp/projects/$username
 
 cp /root/sbp/borgmatic/full.yaml /mnt/backups/$username/full.yaml
-cp /root/sbp/conf/setting.conf /root/sbp/projects/$username/$username.conf
+cp /root/sbp/conf/setting.conf /root/sbp/projects/$username/setting.conf
 
 echo "Не забудь исправить /root/sbp/projects/$username/full.yaml и /root/sbp/conf/$username.conf"
 
