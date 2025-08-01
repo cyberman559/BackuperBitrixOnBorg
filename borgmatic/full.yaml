@@ -15,7 +15,7 @@ exclude_patterns:
   - /home/bitrix/ext_www/*/upload/
   - /home/bitrix/ext_www/*/images/
 repositories:
-  - /mnt/backups/${borgrepo}
+  - path: /mnt/backups/${borgrepo}
 one_file_system: false
 
 encryption_passcommand: "echo ${BORG_PASSPHRASE}"
