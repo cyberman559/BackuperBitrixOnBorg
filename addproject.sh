@@ -22,7 +22,7 @@ BORG_PASSPHRASE="${PROJECT}"
 DB_NAME=("sitemanager")
 EOF
 
-cp "/root/.borg/full.yaml" "/root/.borg/projects/${PROJECT}/full.yaml"
+cp "/root/.borg/full.yaml.example" "/root/.borg/projects/${PROJECT}/full.yaml"
 
 mkdir -p /mnt/backups/${PROJECT}
 borg init --encryption=repokey /mnt/backups/${PROJECT}
