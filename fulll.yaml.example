@@ -1,6 +1,7 @@
 source_directories:
   - /mnt/{{PROJECT}}/www
   - /mnt/{{PROJECT}}/ext_www
+  - /mnt/{{PROJECT}}/db_dumps
 exclude_patterns:
   - /mnt/{{PROJECT}}/bitrix/backup
   - /mnt/{{PROJECT}}/www/bitrix/cache
@@ -13,7 +14,8 @@ exclude_patterns:
   - /mnt/{{PROJECT}}/ext_www/*/upload/
   - /mnt/{{PROJECT}}/ext_www/*/images/
 repositories:
-  - path: /mnt/backups/{{PROJECT}}
+  - label: {{PROJECT}}
+    path: /mnt/backups/{{PROJECT}}
 one_file_system: false
 
 encryption_passcommand: "echo ${BORG_PASSPHRASE}"

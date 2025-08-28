@@ -4,3 +4,4 @@ PORT=22 #порт SSH клиента, с которого снимаем коп�
 
 PROJECT="prompart"
 BORG_PASSPHRASE="prompart"
+DB_NAME=("sitemanager")
