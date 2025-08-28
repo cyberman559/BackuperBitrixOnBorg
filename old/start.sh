@@ -31,18 +31,18 @@ function time_to_backup() {
     fi
 }
 
-source /root/.borg/projects/${project}/settings.conf
-
-export BORG_PASSPHRASE=${BORG_PASSPHRASE}
+source /root/sbp/projects/${project}/setting.conf
 
 if time_to_backup; then
     date +%F > "$FLAG_RUN"
     trap 'rm -f "$FLAG_RUN"' EXIT
-    mkdir -p /mnt/${project}
-    sshfs -p "$PORT" -o IdentityFile=/root/.ssh/id_ed25519 "$USER@$IP":/home/bitrix /mnt/${project}
 
-    borgmatic --config /root/.borg/projects/${project}/full.yaml --verbosity 1
-    fusermount -u /mnt/${project}
+    PRIVATE_KEY_PATH="/home/$project/.ssh/id_ed25519_borg"
+    PRIVATE_KEY_CONTENT=$(base64 -w0 "$PRIVATE_KEY_PATH")
+
+    ssh -p "$CLIENT_PORT" -i /root/.ssh/id_ed25519_borg \
+    "$CLIENT_USER@$CLIENT_IP" \
+    BORG_PASSPHRASE="$BORG_PASSPHRASE" bash -s -- "$project" "$SERVER_IP" "$SERVER_USER" "$SERVER_PORT" "$PRIVATE_KEY_CONTENT" "${DB_NAME[@]}" < /root/sbp/borg.sh
 else
     echo "Резервная копия была менее 1 дня назад. Пропускаем."
 fi
