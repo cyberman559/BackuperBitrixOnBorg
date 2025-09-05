@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 if [[ $EUID -ne 0 ]]; then
   echo "Запусти скрипт с правами root."
@@ -19,9 +18,7 @@ backup_dir="/mnt/backups/$username"
 mkdir -p "$backup_dir"
 chown "$username":"$username" "$backup_dir"
 
-set +e
 ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -C "borg"
-set -e
 echo "Публичный ключ:"
 cat /root/.ssh/id_ed25519.pub
 read -p "Добавьте его на клиент. Нажмите Enter, чтобы продолжить..."
