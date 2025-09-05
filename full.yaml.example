@@ -1,18 +1,19 @@
 source_directories:
-  - /mnt/{{PROJECT}}/www
-  - /mnt/{{PROJECT}}/ext_www
-  - /mnt/{{PROJECT}}/db_dumps
+  - /home/bitrix/{{PROJECT}}/www
+  - /home/bitrix/{{PROJECT}}/ext_www
+  - /home/bitrix/{{PROJECT}}/db_dumps
+  - /home/bitrix/{{PROJECT}}/.msmtprc
 exclude_patterns:
-  - /mnt/{{PROJECT}}/bitrix/backup
-  - /mnt/{{PROJECT}}/www/bitrix/cache
-  - /mnt/{{PROJECT}}/www/bitrix/managed_cache
-  - /mnt/{{PROJECT}}/www/bitrix/stack_cache
-  - /mnt/{{PROJECT}}/www/bitrix/tmp
-  - /mnt/{{PROJECT}}/www/bitrix/html_pages
-  - /mnt/{{PROJECT}}/www/upload/resize_cache
-  - /mnt/{{PROJECT}}/ext_www/*/bitrix
-  - /mnt/{{PROJECT}}/ext_www/*/upload/
-  - /mnt/{{PROJECT}}/ext_www/*/images/
+  - /home/bitrix/{{PROJECT}}/bitrix/backup
+  - /home/bitrix/{{PROJECT}}/www/bitrix/cache
+  - /home/bitrix/{{PROJECT}}/www/bitrix/managed_cache
+  - /home/bitrix/{{PROJECT}}/www/bitrix/stack_cache
+  - /home/bitrix/{{PROJECT}}/www/bitrix/tmp
+  - /home/bitrix/{{PROJECT}}/www/bitrix/html_pages
+  - /home/bitrix/{{PROJECT}}/www/upload/resize_cache
+  - /home/bitrix/{{PROJECT}}/ext_www/*/bitrix
+  - /home/bitrix/{{PROJECT}}/ext_www/*/upload/
+  - /home/bitrix/{{PROJECT}}/ext_www/*/images/
 repositories:
   - label: {{PROJECT}}
     path: /mnt/backups/{{PROJECT}}
