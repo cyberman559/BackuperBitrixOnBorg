@@ -11,8 +11,7 @@ read -p "Введите имя пользователя: " username
 if id "$username" &>/dev/null; then
   echo "Пользователь $username уже существует."
 else
-  useradd --disabled-password --gecos "" "$username"
-  usermod -s /usr/sbin/nologin "$username"
+  useradd -m -s /usr/sbin/nologin "$username"
   echo "Пользователь $username создан."
 fi
 
