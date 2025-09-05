@@ -1,22 +1,22 @@
 source_directories:
-  - /home/bitrix/{{PROJECT}}/www
-  - /home/bitrix/{{PROJECT}}/ext_www
-  - /home/bitrix/{{PROJECT}}/db_dumps
-  - /home/bitrix/{{PROJECT}}/.msmtprc
+  - /home/bitrix/www
+  - /home/bitrix/ext_www
+  - /home/bitrix/db_dumps
+  - /home/bitrix/.msmtprc
 exclude_patterns:
-  - /home/bitrix/{{PROJECT}}/bitrix/backup
-  - /home/bitrix/{{PROJECT}}/www/bitrix/cache
-  - /home/bitrix/{{PROJECT}}/www/bitrix/managed_cache
-  - /home/bitrix/{{PROJECT}}/www/bitrix/stack_cache
-  - /home/bitrix/{{PROJECT}}/www/bitrix/tmp
-  - /home/bitrix/{{PROJECT}}/www/bitrix/html_pages
-  - /home/bitrix/{{PROJECT}}/www/upload/resize_cache
-  - /home/bitrix/{{PROJECT}}/ext_www/*/bitrix
-  - /home/bitrix/{{PROJECT}}/ext_www/*/upload/
-  - /home/bitrix/{{PROJECT}}/ext_www/*/images/
+  - /home/bitrix/bitrix/backup
+  - /home/bitrix/www/bitrix/cache
+  - /home/bitrix/www/bitrix/managed_cache
+  - /home/bitrix/www/bitrix/stack_cache
+  - /home/bitrix/www/bitrix/tmp
+  - /home/bitrix/www/bitrix/html_pages
+  - /home/bitrix/www/upload/resize_cache
+  - /home/bitrix/ext_www/*/bitrix
+  - /home/bitrix/ext_www/*/upload/
+  - /home/bitrix/ext_www/*/images/
 repositories:
   - label: {{PROJECT}}
-    path: /mnt/backups/{{PROJECT}}
+    path: ssh://{{PROJECT}}@{{SERVER_IP}}:{{SERVER_PORT}}/mnt/backups/{{PROJECT}}
 one_file_system: false
 
 encryption_passcommand: "echo ${BORG_PASSPHRASE}"
