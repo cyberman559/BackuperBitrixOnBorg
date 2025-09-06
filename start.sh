@@ -46,7 +46,7 @@ if time_to_backup; then
     set -e
     ssh -p "$PORT" -i /root/.ssh/id_ed25519 \
     "$USER@$IP" \
-    BORG_PASSPHRASE="$BORG_PASSPHRASE" bash -s -- "$project" "$SERVER_IP" "$SERVER_USER" "$SERVER_PORT" "$PRIVATE_KEY_CONTENT" "$YAML_CONTENT" "${DB_NAME[@]}" < /root/.borg/borg.sh
+    BORG_PASSPHRASE="$BORG_PASSPHRASE" bash -s -- "$project" "$PRIVATE_KEY_CONTENT" "$YAML_CONTENT" "${DB_NAME[@]}" < /root/.borg/borg.sh
     date +%F > "$FLAG_FILE"
 else
     echo "Резервная копия была менее 1 дня назад. Пропускаем."

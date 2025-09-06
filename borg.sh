@@ -1,16 +1,13 @@
 #!/bin/bash
 
 project="$1"
-SERVER_IP="$2"
-SERVER_USER="$3"
-SERVER_PORT="$4"
-PRIVATE_KEY_CONTENT="$5"
-YAML="$6"
-shift 6
+PRIVATE_KEY_CONTENT="$2"
+YAML="$3"
+shift 3
 
 DB_NAME=("$@")
 
-remote_server="$SERVER_IP"
+#remote_server="$SERVER_IP"
 
 identity_file="/tmp/borg_key_$project"
 yaml_file="/tmp/borg_yaml.yaml"
@@ -21,18 +18,6 @@ function close() {
 }
 
 trap close EXIT
-
-echo "$PRIVATE_KEY_CONTENT" | base64 -d > "$identity_file"
-chmod 600 "$identity_file"
-
-echo "$YAML" | base64 -d > "$yaml_file"
-chmod 600 "$yaml_file"
-
-# Проверка существования конфигурации
-if [[ ! -f "$yaml_file" ]]; then
-    echo "Конфигурация $yaml_file не найдена."
-    exit 1
-fi
 
 dump_base_skip_stat=1
 dump_base_skip_search=1
@@ -70,6 +55,18 @@ for db in "${DB_NAME[@]}"; do
         echo "Ошибка создания дампа базы данных."
     fi
 done
+
+echo "$PRIVATE_KEY_CONTENT" | base64 -d > "$identity_file"
+chmod 600 "$identity_file"
+
+echo "$YAML" | base64 -d > "$yaml_file"
+chmod 600 "$yaml_file"
+
+# Проверка существования конфигурации
+if [[ ! -f "$yaml_file" ]]; then
+    echo "Конфигурация $yaml_file не найдена."
+    exit 1
+fi
 
 export BORG_RSH="ssh -i $identity_file"
 borgmatic --config "$yaml_file" --verbosity 1
