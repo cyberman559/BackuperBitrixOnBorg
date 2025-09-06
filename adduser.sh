@@ -10,13 +10,16 @@ read -p "Введите имя пользователя: " username
 if id "$username" &>/dev/null; then
   echo "Пользователь $username уже существует."
 else
-  useradd -m -s /usr/sbin/nologin "$username"
+  useradd -m "$username"
   echo "Пользователь $username создан."
 fi
 
+deluser "$username" users
+
 backup_dir="/mnt/backups/$username"
 mkdir -p "$backup_dir"
-chown "$username":"$username" "$backup_dir"
+chown -R "$username":"$username" "$backup_dir"
+chmod -R 700 "$backup_dir"
 
 ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -C "borg"
 echo "Публичный ключ:"
@@ -27,13 +30,13 @@ ssh_dir="/home/$username/.ssh"
 mkdir -p "$ssh_dir"
 ssh-keygen -t ed25519 -f $ssh_dir/id_ed25519 -C "borg_client"
 
-chown root:root "$ssh_dir"
-chmod 700 "$ssh_dir"
+#chown root:root "$ssh_dir"
+#chmod 700 "$ssh_dir"
 touch "$ssh_dir/authorized_keys"
-chown root:root "$ssh_dir/authorized_keys"
-chmod 600 "$ssh_dir/authorized_keys"
+#chown root:root "$ssh_dir/authorized_keys"
+#chmod 600 "$ssh_dir/authorized_keys"
 
-echo "command=\"borg serve --restrict-to-path $backup_dir\",restrict $(cat $ssh_dir/id_ed25519.pub)" >> "$ssh_dir/authorized_keys"
+echo "$(cat $ssh_dir/id_ed25519.pub)" >> "$ssh_dir/authorized_keys"
 
 systemctl restart sshd
 
