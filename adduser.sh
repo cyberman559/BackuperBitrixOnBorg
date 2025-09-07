@@ -30,11 +30,11 @@ ssh_dir="/home/$username/.ssh"
 mkdir -p "$ssh_dir"
 ssh-keygen -t ed25519 -f $ssh_dir/id_ed25519 -C "borg_client"
 
-#chown root:root "$ssh_dir"
-#chmod 700 "$ssh_dir"
+chown "$username":"$username" "$ssh_dir"
+chmod 750 "$ssh_dir"
 touch "$ssh_dir/authorized_keys"
-#chown root:root "$ssh_dir/authorized_keys"
-#chmod 600 "$ssh_dir/authorized_keys"
+chown root:"$username" "$ssh_dir/authorized_keys"
+chmod 640 "$ssh_dir/authorized_keys"
 
 echo "$(cat $ssh_dir/id_ed25519.pub)" >> "$ssh_dir/authorized_keys"
 
