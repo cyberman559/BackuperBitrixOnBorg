@@ -9,7 +9,7 @@ DB_NAME=("$@")
 
 #remote_server="$SERVER_IP"
 
-identity_file="/tmp/borg_key_$project"
+identity_file="/tmp/borg_key_${project}"
 yaml_file="/tmp/borg_yaml.yaml"
 
 function close() {
@@ -71,8 +71,8 @@ fi
 export BORG_RSH="ssh -i $identity_file"
 borgmatic --config "$yaml_file" --verbosity 1
 if [[ $? -ne 0 ]]; then
-    echo "Ошибка при запуске borgmatic для проекта $project"
+    echo "Ошибка при запуске borgmatic для проекта ${project}"
     exit 1
 fi
 
-echo "Бэкап проекта $project успешно завершён."
+echo "Бэкап проекта ${project} успешно завершён."
