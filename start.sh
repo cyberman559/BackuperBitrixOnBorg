@@ -6,8 +6,10 @@ if [[ -z "$project" ]]; then
     exit 1
 fi
 
-FLAG_FILE="/mnt/backups/${project}/.full_last_success"
-FLAG_RUN="/mnt/backups/${project}/.run"
+mkdir -p /var/borg/projects/${project}/
+
+FLAG_FILE="/var/borg/projects/${project}/.full_last_success"
+FLAG_RUN="/var/borg/projects/${project}/.run"
 
 if [ -f "$FLAG_RUN" ]; then
     echo "Резервная копия уже выполняется"

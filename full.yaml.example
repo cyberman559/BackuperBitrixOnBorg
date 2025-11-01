@@ -40,7 +40,7 @@ keep_weekly: 4
 keep_monthly: 6
 
 #after_backup:
-#  - date +%F > /mnt/backups/{{PROJECT}}/.full_last_success
+#  - date +%F > /var/borg/projects/backups/{{PROJECT}}/.full_last_success
 #after_prune:
 #  - borg compact {{PROJECT}}
 on_error:
