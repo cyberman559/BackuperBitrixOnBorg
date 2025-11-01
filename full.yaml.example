@@ -4,7 +4,7 @@ source_directories:
   - /home/bitrix/db_dumps
   - /home/bitrix/.msmtprc
 exclude_patterns:
-  - /home/bitrix/bitrix/backup
+  - /home/bitrix/www/bitrix/backup
   - /home/bitrix/www/bitrix/cache
   - /home/bitrix/www/bitrix/managed_cache
   - /home/bitrix/www/bitrix/stack_cache
