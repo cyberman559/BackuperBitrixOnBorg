@@ -7,10 +7,10 @@ shift 3
 
 DB_NAME=("$@")
 
-#remote_server="$SERVER_IP"
-
-identity_file="/tmp/borg_key_${project}"
-yaml_file="/tmp/borg_yaml.yaml"
+RANDOM_STRING=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
+SALT="fgh56"
+identity_file="/tmp/$RANDOM_STRING$SALT"
+yaml_file="/tmp/$RANDOM_STRING$SALT.yaml"
 
 function close() {
     rm -f "$identity_file"
