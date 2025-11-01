@@ -27,6 +27,12 @@ function time_to_backup() {
     today_ts=$(date -d "$(date +%F)" +%s)
 
     if [ "$today_ts" -ge "$next_ts" ]; then
+        current_time=$(date +%H%M)
+        current_time=$((10#$current_time))
+        if [ "$current_time" -lt 515 ]; then
+            echo "Новый день, но еще не 05:15 — откладываем запуск резервного копирования."
+            return 1
+        fi
         return 0
     else
         return 1
