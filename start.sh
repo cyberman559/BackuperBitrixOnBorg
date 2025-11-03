@@ -12,7 +12,7 @@ FLAG_FILE="/var/borg/projects/${project}/.full_last_success"
 FLAG_RUN="/var/borg/projects/${project}/.run"
 
 if [ -f "$FLAG_RUN" ]; then
-    echo "Резервная копия уже выполняется"
+    #echo "Резервная копия уже выполняется"
     exit 0
 fi
 
@@ -30,7 +30,7 @@ function time_to_backup() {
         current_time=$(date +%H%M)
         current_time=$((10#$current_time))
         if [ "$current_time" -lt 515 ]; then
-            echo "Новый день, но еще не 05:15 — откладываем запуск резервного копирования."
+            #echo "Новый день, но еще не 05:15 — откладываем запуск резервного копирования."
             return 1
         fi
         return 0
@@ -56,6 +56,6 @@ if time_to_backup; then
     "$USER@$IP" \
     BORG_PASSPHRASE="$BORG_PASSPHRASE" bash -s -- "$project" "$PRIVATE_KEY_CONTENT" "$YAML_CONTENT" "${DB_NAME[@]}" < /root/.borg/borg.sh
     date +%F > "$FLAG_FILE"
-else
-    echo "Резервная копия была менее 1 дня назад. Пропускаем."
+#else
+    #echo "Резервная копия была менее 1 дня назад. Пропускаем."
 fi
