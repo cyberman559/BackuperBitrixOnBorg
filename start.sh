@@ -1,5 +1,21 @@
 #!/bin/bash
 
+function close() {
+    rm -f "$FLAG_RUN"
+    if [ "$VPN" -eq 1 ]; then
+        if [ -f "/tmp/openvpn-${project}.pid" ]; then
+          pkill -F "/tmp/openvpn-${project}.pid" 2>/dev/null || true
+          rm -f "/tmp/openvpn-${project}.pid"
+        else
+          pkill openvpn || true
+        fi
+    fi
+}
+
+trap close EXIT
+
+set -e
+
 project="${1:-}"
 if [[ -z "$project" ]]; then
     echo "Не передан параметр project"
@@ -12,7 +28,6 @@ FLAG_FILE="/var/borg/projects/${project}/.full_last_success"
 FLAG_RUN="/var/borg/projects/${project}/.run"
 
 if [ -f "$FLAG_RUN" ]; then
-    #echo "Резервная копия уже выполняется"
     exit 0
 fi
 
@@ -43,15 +58,12 @@ source /root/.borg/projects/${project}/settings.conf
 
 if time_to_backup; then
     date +%F > "$FLAG_RUN"
-    trap 'rm -f "$FLAG_RUN"' EXIT
 
     PRIVATE_KEY_PATH="/home/$project/.ssh/id_ed25519"
     PRIVATE_KEY_CONTENT=$(base64 -w0 "$PRIVATE_KEY_PATH")
 
     YAML="/root/.borg/projects/${project}/full.yaml"
     YAML_CONTENT=$(base64 -w0 "$YAML")
-
-    set -e
     
     if [ "$VPN" -eq 1 ]; then
         openvpn --config /root/.borg/projects/${project}/$OVPN_NAME.ovpn --daemon \
@@ -66,35 +78,10 @@ if time_to_backup; then
           fi
     fi
     
-    if ! ping -c1 -W3 "$IP" >/dev/null 2>&1; then
+    if ping -c1 -W3 "$IP" >/dev/null 2>&1; then
       ssh -p "$PORT" -i /root/.ssh/id_ed25519 \
         "$USER@$IP" \
         BORG_PASSPHRASE="$BORG_PASSPHRASE" bash -s -- "$project" "$PRIVATE_KEY_CONTENT" "$YAML_CONTENT" "${DB_NAME[@]}" < /root/.borg/borg.sh
       date +%F > "$FLAG_FILE"
     fi
-    
-    if [ "$VPN" -eq 1 ]; then
-      if [ -f "/tmp/openvpn-${project}.pid" ]; then
-        pkill -F "/tmp/openvpn-${project}.pid" 2>/dev/null || true
-        rm -f "/tmp/openvpn-${project}.pid"
-      else
-        pkill openvpn || true
-      fi
-    fi
-#else
-    #echo "Резервная копия была менее 1 дня назад. Пропускаем."
 fi
-
-function close() {
-    rm -f "$FLAG_RUN"
-    if [ "$VPN" -eq 1 ]; then
-        if [ -f "/tmp/openvpn-${project}.pid" ]; then
-          pkill -F "/tmp/openvpn-${project}.pid" 2>/dev/null || true
-          rm -f "/tmp/openvpn-${project}.pid"
-        else
-          pkill openvpn || true
-        fi
-    fi
-}
-
-trap close EXIT
