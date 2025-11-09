@@ -53,17 +53,33 @@ if time_to_backup; then
 
     set -e
     
-    if [ "$VPN" == 1 ]; then
-        openvpn --config /root/.borg/projects/${project}/$OVPN_NAME.ovpn --daemon
+    if [ "$VPN" -eq 1 ]; then
+        openvpn --config /root/.borg/projects/${project}/$OVPN_NAME.ovpn --daemon \
+          --log "/var/log/openvpn-${project}.log" \
+          --writepid "/tmp/openvpn-${project}.pid"
+          
+          sleep 10
+          
+          if ! ping -c1 -W3 "$IP" >/dev/null 2>&1; then
+            pkill -F "/tmp/openvpn-${project}.pid" 2>/dev/null || true
+            exit 1
+          fi
     fi
     
-    ssh -p "$PORT" -i /root/.ssh/id_ed25519 \
-    "$USER@$IP" \
-    BORG_PASSPHRASE="$BORG_PASSPHRASE" bash -s -- "$project" "$PRIVATE_KEY_CONTENT" "$YAML_CONTENT" "${DB_NAME[@]}" < /root/.borg/borg.sh
-    date +%F > "$FLAG_FILE"
+    if ! ping -c1 -W3 "$IP" >/dev/null 2>&1; then
+      ssh -p "$PORT" -i /root/.ssh/id_ed25519 \
+        "$USER@$IP" \
+        BORG_PASSPHRASE="$BORG_PASSPHRASE" bash -s -- "$project" "$PRIVATE_KEY_CONTENT" "$YAML_CONTENT" "${DB_NAME[@]}" < /root/.borg/borg.sh
+      date +%F > "$FLAG_FILE"
+    fi
     
-    if [ "$VPN" == 1 ]; then
-      pkill openvpn
+    if [ "$VPN" -eq 1 ]; then
+      if [ -f "/tmp/openvpn-${project}.pid" ]; then
+        pkill -F "/tmp/openvpn-${project}.pid" 2>/dev/null || true
+        rm -f "/tmp/openvpn-${project}.pid"
+      else
+        pkill openvpn || true
+      fi
     fi
 #else
     #echo "Резервная копия была менее 1 дня назад. Пропускаем."
@@ -71,8 +87,13 @@ fi
 
 function close() {
     rm -f "$FLAG_RUN"
-    if [ "$VPN" == 1 ]; then
-        pkill openvpn
+    if [ "$VPN" -eq 1 ]; then
+        if [ -f "/tmp/openvpn-${project}.pid" ]; then
+          pkill -F "/tmp/openvpn-${project}.pid" 2>/dev/null || true
+          rm -f "/tmp/openvpn-${project}.pid"
+        else
+          pkill openvpn || true
+        fi
     fi
 }
 
