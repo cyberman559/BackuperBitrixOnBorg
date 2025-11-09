@@ -5,3 +5,6 @@ PORT=22 #порт SSH клиента, с которого снимаем коп�
 PROJECT=""
 BORG_PASSPHRASE=""
 DB_NAME=("sitemanager")
+
+VPN=0
+OVPN_NAME=""

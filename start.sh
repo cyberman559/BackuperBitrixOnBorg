@@ -52,10 +52,28 @@ if time_to_backup; then
     YAML_CONTENT=$(base64 -w0 "$YAML")
 
     set -e
+    
+    if [ "$VPN" == 1 ]; then
+        openvpn --config /root/.borg/projects/${project}/$OVPN_NAME.ovpn --daemon
+    fi
+    
     ssh -p "$PORT" -i /root/.ssh/id_ed25519 \
     "$USER@$IP" \
     BORG_PASSPHRASE="$BORG_PASSPHRASE" bash -s -- "$project" "$PRIVATE_KEY_CONTENT" "$YAML_CONTENT" "${DB_NAME[@]}" < /root/.borg/borg.sh
     date +%F > "$FLAG_FILE"
+    
+    if [ "$VPN" == 1 ]; then
+      pkill openvpn
+    fi
 #else
     #echo "Резервная копия была менее 1 дня назад. Пропускаем."
 fi
+
+function close() {
+    rm -f "$FLAG_RUN"
+    if [ "$VPN" == 1 ]; then
+        pkill openvpn
+    fi
+}
+
+trap close EXIT
