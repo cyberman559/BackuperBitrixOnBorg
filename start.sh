@@ -1,6 +1,7 @@
 #!/bin/bash
 
 project="${1:-}"
+force="${2:-}"
 if [[ -z "$project" ]]; then
     echo "Не передан параметр project"
     exit 1
@@ -56,7 +57,7 @@ function time_to_backup() {
     fi
 }
 
-if time_to_backup; then
+if time_to_backup || [[ "$force" == "force" ]]; then
     date +%F > "$FLAG_RUN"
 
     PRIVATE_KEY_PATH="/home/$project/.ssh/id_ed25519"
