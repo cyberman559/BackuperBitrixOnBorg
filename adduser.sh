@@ -43,7 +43,7 @@ systemctl restart sshd
 if borg list $backup_dir > /dev/null 2>&1; then
   echo "Репозиторий уже инициализирован."
 else
-  borg init --encryption=repokey $backup_dir
+  sudo -u $username borg init --encryption=repokey $backup_dir
   echo "Репозиторий создан."
 fi
 

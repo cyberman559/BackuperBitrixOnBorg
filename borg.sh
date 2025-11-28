@@ -49,7 +49,7 @@ for db in "${DB_NAME[@]}"; do
             continue
         fi
     done
-
+    mkdir -p /home/bitrix/db_dumps
     mysqldump "${IGNORE_ARGS[@]}" "$db" > "/home/bitrix/db_dumps/$db.sql"
     if [[ $? -ne 0 ]]; then
         echo "Ошибка создания дампа базы данных."

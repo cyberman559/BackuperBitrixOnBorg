@@ -1,8 +1,14 @@
 #!/bin/bash
 
+project="${1:-}"
+if [[ -z "$project" ]]; then
+    echo "Не передан параметр project"
+    exit 1
+fi
+
 function close() {
     rm -f "$FLAG_RUN"
-    if [ "$VPN" -eq 1 ]; then
+    if [ "$VPN" == 1 ]; then
         if [ -f "/tmp/openvpn-${project}.pid" ]; then
           pkill -F "/tmp/openvpn-${project}.pid" 2>/dev/null || true
           rm -f "/tmp/openvpn-${project}.pid"
@@ -16,11 +22,7 @@ trap close EXIT
 
 set -e
 
-project="${1:-}"
-if [[ -z "$project" ]]; then
-    echo "Не передан параметр project"
-    exit 1
-fi
+source /root/.borg/projects/${project}/settings.conf
 
 mkdir -p /var/borg/projects/${project}/
 
@@ -54,8 +56,6 @@ function time_to_backup() {
     fi
 }
 
-source /root/.borg/projects/${project}/settings.conf
-
 if time_to_backup; then
     date +%F > "$FLAG_RUN"
 
@@ -65,7 +65,7 @@ if time_to_backup; then
     YAML="/root/.borg/projects/${project}/full.yaml"
     YAML_CONTENT=$(base64 -w0 "$YAML")
     
-    if [ "$VPN" -eq 1 ]; then
+    if [ "$VPN" == 1 ]; then
         openvpn --config /root/.borg/projects/${project}/$OVPN_NAME.ovpn --daemon \
           --log "/var/log/openvpn-${project}.log" \
           --writepid "/tmp/openvpn-${project}.pid"
